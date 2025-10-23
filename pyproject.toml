@@ -47,3 +47,4 @@ test_watch="watchfiles 'python3 -m pytest -vv -s' app/ tests/ --ignore-path .ven
 lint = "ruff check app tests"
 lint_fix = "ruff check app tests --fix"
 type_check= "pyright src tests"
+pre_commit_check= "pre-cmmit run --all-files"
