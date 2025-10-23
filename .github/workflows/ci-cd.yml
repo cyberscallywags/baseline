@@ -36,11 +36,7 @@ jobs:
 
       - name: ✅ Run tests (pytest if present)
         run: |
-          python3 -m pytest  tests
-
-      - name: Run e2e tests
-        run: |
-          python -m pytest  tests
+          python pytest -vv -s  tests
 
       
       - name: 🐳 Build Docker image
