@@ -36,7 +36,7 @@ jobs:
 
       - name: ✅ Run tests (pytest if present)
         run: |
-          python -m pytest  tests
+          python3 -m pytest  tests
 
       - name: Run e2e tests
         run: |
