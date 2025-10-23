@@ -43,7 +43,7 @@ indent-style = "space"
 
 [tool.taskipy.tasks]
 test_run = "python3 -m pytest -vv -s"
-test_watch="watchfiles 'python3 -m pytest -vv -s app/ tests/ --ignore-path .venv  --ignore-path .git"
+test_watch="watchfiles 'python3 -m pytest -vv -s' app/ tests/ --ignore-path .venv  --ignore-path .git "
 lint = "ruff check app tests"
 lint_fix = "ruff check app tests --fix"
 type_check= "pyright src tests"
