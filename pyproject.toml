@@ -1,0 +1,49 @@
+[project]
+name = "baseline"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.119.1",
+    "httpx>=0.28.1",
+    "pre-commit>=4.3.0",
+    "pydantic>=2.12.3",
+    "pytest>=8.4.2",
+    "python-multipart>=0.0.20",
+    "taskipy>=1.14.1",
+    "uvicorn>=0.38.0",
+]
+
+
+[tool.uv]
+dev-dependencies = [
+    "ruff",
+    "pre-commit",
+    "pytest-cov>=7.0.0",
+    "pytest-html>=4.1.1",
+    "allure-pytest>=2.15.0",
+    "pyright>=1.1.406",
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+
+[tool.taskipy.tasks]
+test_run = "python3 -m pytest -vv -s"
+test_watch="watchfiles 'python3 -m pytest -vv -s app/ tests/ --ignore-path .venv  --ignore-path .git"
+lint = "ruff check app tests"
+lint_fix = "ruff check app tests --fix"
+type_check= "pyright src tests"
