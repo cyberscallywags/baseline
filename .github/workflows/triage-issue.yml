@@ -1,0 +1,64 @@
+name: 🏷️ Issue triage
+
+on:
+  issues:
+    types: [opened, edited, reopened]
+
+permissions:
+  issues: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Derive severity label from body
+        id: severity
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || "";
+            // Find the "Severity" line rendered from the form
+            // The form renders like: "**Severity**: S1 - Critical ..."
+            const match = body.match(/Severity.*?(S[0-3]\s*-\s*[A-Za-z]+)/i);
+            let sev = match ? match[1].split("-")[0].trim() : null; // e.g. "S1"
+            let label = sev ? `severity:${sev.toLowerCase()}` : null;
+            return { label };
+
+      - name: Add severity label (if found)
+        if: steps.severity.outputs.result != 'null'
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: ${{ fromJSON(steps.severity.outputs.result).label }}
+
+      - name: Ensure triage label stays
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: triage
+
+      - name: Friendly triage comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const number = issue.number;
+            const body = issue.body || "";
+            // Extract a few fields for a quick summary (best-effort)
+            function extract(label){
+              const re = new RegExp(`${label}[^\\n]*\\n\\n?([^\\n]+)`, 'i');
+              const m = body.match(re);
+              return m ? m[1].trim() : "";
+            }
+            const summary = [
+              `**Thanks for the report!** We'll take a look shortly.`,
+              `- Severity: ${extract("Severity") || "N/A"}`,
+              `- Reproducibility: ${extract("Reproducibility") || "N/A"}`,
+              `- Version: ${extract("Version / Commit") || "N/A"}`,
+              `- Environment: ${extract("Environment") || "N/A"}`
+            ].join("\n");
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: number,
+              body: summary
+            });
